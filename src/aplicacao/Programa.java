@@ -34,7 +34,8 @@ public class Programa {
 		for (Vendedor vend : vendedorEncontrado2) {
 			System.out.println(vend);
 		}
-		
+
+		/*
 		System.out.println("\n === Teste 4 - Inserir Vendedor====");
 		Vendedor vendedorInserir = new Vendedor();
 		Departamento depInserir = new Departamento();
@@ -46,17 +47,26 @@ public class Programa {
 		vendedorInserir.setDepartamento(depInserir);
 		vendedor.inserir(vendedorInserir);
 		System.out.println("Novo Id inserido : " + vendedorInserir.getId());
-		
-		System.out.println("===Teste 5 - Atualização de Vendedor");
+*/
+		System.out.println("\n===Teste 5 - Atualização de Vendedor");
 		Vendedor vendAtu = vendedor.buscarPorId(1);
 		vendAtu.setNome("Bruce Wayne");
 		vendAtu.setEmail("wayne@gmail.com");
 		vendedor.atualizar(vendAtu);
 		System.out.println("Update Completo!!");
-		
-		
-		
 		System.out.println("Vendedor atualizado: " + vendedorEncontrado.getId());
+		
+		
+		System.out.println("\n===Teste 6 - Vendedor Deletado===");
+		vendAtu = vendedor.buscarPorId(13);
+		if(vendAtu != null) {
+		vendedor.apagarPorId(vendAtu.getId());
+		System.out.println("Vendedor com Id " + vendAtu.getId() + " deletado!!");
+		}
+		else {
+			System.out.println("Vendedor não existe!!");
+		}
+		
 		System.out.println("\n===Teste Busca Departamento po Id====");
 		Departamento dep = departamento.buscarPorId(3);
 		System.out.println(dep);
