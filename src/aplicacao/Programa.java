@@ -47,7 +47,16 @@ public class Programa {
 		vendedor.inserir(vendedorInserir);
 		System.out.println("Novo Id inserido : " + vendedorInserir.getId());
 		
-
+		System.out.println("===Teste 5 - Atualização de Vendedor");
+		Vendedor vendAtu = vendedor.buscarPorId(1);
+		vendAtu.setNome("Bruce Wayne");
+		vendAtu.setEmail("wayne@gmail.com");
+		vendedor.atualizar(vendAtu);
+		System.out.println("Update Completo!!");
+		
+		
+		
+		System.out.println("Vendedor atualizado: " + vendedorEncontrado.getId());
 		System.out.println("\n===Teste Busca Departamento po Id====");
 		Departamento dep = departamento.buscarPorId(3);
 		System.out.println(dep);

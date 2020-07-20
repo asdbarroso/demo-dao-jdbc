@@ -1,6 +1,7 @@
 package model.dao.impl;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,48 +29,59 @@ public class VendedorDaoJDBC implements VendedorDao {
 
 		ResultSet rs = null;
 		PreparedStatement st = null;
-		
+
 		try {
-			st = conn.prepareStatement(
-				"INSERT INTO seller ( "	
-				+"Name, Email, BirthDate, BaseSalary, DepartmentId) "
-				+ "VALUES "
-				+ "(?, ?, ?, ?, ?)",
-				PreparedStatement.RETURN_GENERATED_KEYS);
-			
+			st = conn.prepareStatement("INSERT INTO seller ( " + "Name, Email, BirthDate, BaseSalary, DepartmentId) "
+					+ "VALUES " + "(?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
+
 			st.setString(1, obj.getNome());
 			st.setString(2, obj.getEmail());
 			st.setDate(3, new java.sql.Date(obj.getDataNasc().getTime()));
 			st.setDouble(4, obj.getSalarioBase());
 			st.setInt(5, obj.getDepartamento().getId());
-			
+
 			int linhasAlteradas = st.executeUpdate();
 
-			if(linhasAlteradas > 0) {
+			if (linhasAlteradas > 0) {
 				ResultSet result = st.getGeneratedKeys();
-				if(result.next()) {
+				if (result.next()) {
 					int id = result.getInt(1);
 					obj.setId(id);
 				}
 				DB.closeResultSet(result);
-			}
-			else {
+			} else {
 				throw new DbExcepetion("Algo ocorreu de forma inesperada!! Nehuma linha alterada!!");
 			}
-		}
-		catch(SQLException e) {
+		} catch (SQLException e) {
 			throw new DbExcepetion(e.getMessage());
-		}
-		finally {
+		} finally {
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
 	}
 
 	@Override
-	public void atualizar(Vendedor dep) {
-		// TODO Auto-generated method stub
+	public void atualizar(Vendedor obj) {
 
+		PreparedStatement st = null;
+
+		try {
+			st = conn.prepareStatement("UPDATE seller SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? WHERE Id = ?");
+			st.setString(1, obj.getNome());
+			st.setString(2, obj.getEmail());
+			st.setDate(3, new java.sql.Date(obj.getDataNasc().getTime()));
+			st.setDouble(4, obj.getSalarioBase());
+			st.setInt(5, obj.getDepartamento().getId());
+			st.setInt(6, obj.getId());
+
+			st.executeUpdate();
+			
+		} 
+		catch (SQLException e) {
+			throw new DbExcepetion(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+		}
 	}
 
 	@Override
