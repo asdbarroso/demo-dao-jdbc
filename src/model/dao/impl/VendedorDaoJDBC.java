@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import db.DB;
 import db.DbExcepetion;
 import model.dao.VendedorDao;
@@ -36,6 +39,7 @@ public class VendedorDaoJDBC implements VendedorDao {
 		// TODO Auto-generated method stub
 
 	}
+	
 
 	@Override
 	public Vendedor buscarPorId(Integer id) {
@@ -45,8 +49,10 @@ public class VendedorDaoJDBC implements VendedorDao {
 
 		try {
 			st = conn.prepareStatement(
-					"SELECT seller.*, department.Name as DepName " + "FROM seller INNER JOIN department "
-							+ "ON seller.DepartmentId = department.Id " + "WHERE seller.Id = ?");
+			"SELECT seller.*, department.Name as DepName " 
+			+ "FROM seller INNER JOIN department "
+			+ "ON seller.DepartmentId = department.Id " 
+			+ "WHERE seller.Id = ?");
 
 			st.setInt(1, id);
 			rs = st.executeQuery();
@@ -55,7 +61,6 @@ public class VendedorDaoJDBC implements VendedorDao {
 				Departamento dep = instanciarDepartamento(rs);
 				Vendedor vendedor = instaciarVendedor(rs, dep);
 				return vendedor;
-
 			}
 			return null;
 		} catch (SQLException e) {
@@ -64,7 +69,78 @@ public class VendedorDaoJDBC implements VendedorDao {
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
+	}
 
+	@Override
+	public List<Vendedor> buscaPorDepartamento(Departamento dep) {
+		
+		ResultSet rs = null;
+		PreparedStatement st = null;
+		
+		try {
+			st = conn.prepareStatement(
+			"SELECT seller.*, department.Name as DepName " 
+			+ "FROM seller INNER JOIN department "
+			+ "ON seller.DepartmentId = department.Id " 
+			+ "WHERE DepartmentId = ? ORDER BY Name");
+		
+			st.setInt(1, dep.getId());
+			rs = st.executeQuery();
+			List<Vendedor> listaVendedores = new ArrayList<>();
+			Map<Integer, Departamento> map = new HashMap<>();
+			
+			while (rs.next()) {
+				
+				Departamento depart = map.get(rs.getInt("DepartmentID"));
+				System.out.println("Depart: .. " + depart);
+				if(depart == null) {
+					depart = instanciarDepartamento(rs);
+					System.out.println("Depart2:.. " + depart);
+					map.put(rs.getInt("DepartmentID"), depart);
+				}
+				listaVendedores.add(instaciarVendedor(rs, depart));
+			}
+			return listaVendedores;
+		} catch (SQLException e) {
+			throw new DbExcepetion(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+
+	}
+
+	@Override
+	public List<Vendedor> buscarTodos() {
+		ResultSet rs = null;
+		PreparedStatement st = null;
+		
+		try {
+			st = conn.prepareStatement(
+			"SELECT seller.*, department.Name as DepName " 
+			+ "FROM seller INNER JOIN department "
+			+ "ON seller.DepartmentId = department.Id "
+			+ "ORDER BY Name");
+		
+			rs = st.executeQuery();
+			List<Vendedor> listaVendedores = new ArrayList<>();
+			Map<Integer, Departamento> map = new HashMap<>();
+			
+			while (rs.next()) {
+				Departamento depart = map.get(rs.getInt("DepartmentID"));
+				if(depart == null) {
+					depart = instanciarDepartamento(rs);
+					map.put(rs.getInt("DepartmentID"), depart);
+				}
+				listaVendedores.add(instaciarVendedor(rs, depart));
+			}
+			return listaVendedores;
+		} catch (SQLException e) {
+			throw new DbExcepetion(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 	}
 
 	private Vendedor instaciarVendedor(ResultSet rs, Departamento dep) throws SQLException {
@@ -84,11 +160,4 @@ public class VendedorDaoJDBC implements VendedorDao {
 		dep.setNome(rs.getString("DepName"));
 		return dep;
 	}
-
-	@Override
-	public List<Vendedor> buscaTodos() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
