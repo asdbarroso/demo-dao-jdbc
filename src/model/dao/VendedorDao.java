@@ -7,8 +7,8 @@ import model.entidades.Vendedor;
 
 public interface VendedorDao {
 
-	void inserir(Vendedor dep);
-	void atualizar(Vendedor dep);
+	void inserir(Vendedor obj);
+	void atualizar(Vendedor obj);
 	void apagarPorId(Integer id);
 	Vendedor buscarPorId(Integer id);
 	List<Vendedor> buscarTodos();

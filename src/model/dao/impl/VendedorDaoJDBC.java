@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import db.DB;
 import db.DbExcepetion;
 import model.dao.VendedorDao;
@@ -23,9 +24,46 @@ public class VendedorDaoJDBC implements VendedorDao {
 	}
 
 	@Override
-	public void inserir(Vendedor dep) {
-		// TODO Auto-generated method stub
+	public void inserir(Vendedor obj) {
 
+		ResultSet rs = null;
+		PreparedStatement st = null;
+		
+		try {
+			st = conn.prepareStatement(
+				"INSERT INTO seller ( "	
+				+"Name, Email, BirthDate, BaseSalary, DepartmentId) "
+				+ "VALUES "
+				+ "(?, ?, ?, ?, ?)",
+				PreparedStatement.RETURN_GENERATED_KEYS);
+			
+			st.setString(1, obj.getNome());
+			st.setString(2, obj.getEmail());
+			st.setDate(3, new java.sql.Date(obj.getDataNasc().getTime()));
+			st.setDouble(4, obj.getSalarioBase());
+			st.setInt(5, obj.getDepartamento().getId());
+			
+			int linhasAlteradas = st.executeUpdate();
+
+			if(linhasAlteradas > 0) {
+				ResultSet result = st.getGeneratedKeys();
+				if(result.next()) {
+					int id = result.getInt(1);
+					obj.setId(id);
+				}
+				DB.closeResultSet(result);
+			}
+			else {
+				throw new DbExcepetion("Algo ocorreu de forma inesperada!! Nehuma linha alterada!!");
+			}
+		}
+		catch(SQLException e) {
+			throw new DbExcepetion(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 	}
 
 	@Override
@@ -39,7 +77,6 @@ public class VendedorDaoJDBC implements VendedorDao {
 		// TODO Auto-generated method stub
 
 	}
-	
 
 	@Override
 	public Vendedor buscarPorId(Integer id) {
@@ -49,10 +86,8 @@ public class VendedorDaoJDBC implements VendedorDao {
 
 		try {
 			st = conn.prepareStatement(
-			"SELECT seller.*, department.Name as DepName " 
-			+ "FROM seller INNER JOIN department "
-			+ "ON seller.DepartmentId = department.Id " 
-			+ "WHERE seller.Id = ?");
+					"SELECT seller.*, department.Name as DepName " + "FROM seller INNER JOIN department "
+							+ "ON seller.DepartmentId = department.Id " + "WHERE seller.Id = ?");
 
 			st.setInt(1, id);
 			rs = st.executeQuery();
@@ -73,27 +108,25 @@ public class VendedorDaoJDBC implements VendedorDao {
 
 	@Override
 	public List<Vendedor> buscaPorDepartamento(Departamento dep) {
-		
+
 		ResultSet rs = null;
 		PreparedStatement st = null;
-		
+
 		try {
 			st = conn.prepareStatement(
-			"SELECT seller.*, department.Name as DepName " 
-			+ "FROM seller INNER JOIN department "
-			+ "ON seller.DepartmentId = department.Id " 
-			+ "WHERE DepartmentId = ? ORDER BY Name");
-		
+					"SELECT seller.*, department.Name as DepName " + "FROM seller INNER JOIN department "
+							+ "ON seller.DepartmentId = department.Id " + "WHERE DepartmentId = ? ORDER BY Name");
+
 			st.setInt(1, dep.getId());
 			rs = st.executeQuery();
 			List<Vendedor> listaVendedores = new ArrayList<>();
 			Map<Integer, Departamento> map = new HashMap<>();
-			
+
 			while (rs.next()) {
-				
+
 				Departamento depart = map.get(rs.getInt("DepartmentID"));
 				System.out.println("Depart: .. " + depart);
-				if(depart == null) {
+				if (depart == null) {
 					depart = instanciarDepartamento(rs);
 					System.out.println("Depart2:.. " + depart);
 					map.put(rs.getInt("DepartmentID"), depart);
@@ -114,21 +147,19 @@ public class VendedorDaoJDBC implements VendedorDao {
 	public List<Vendedor> buscarTodos() {
 		ResultSet rs = null;
 		PreparedStatement st = null;
-		
+
 		try {
 			st = conn.prepareStatement(
-			"SELECT seller.*, department.Name as DepName " 
-			+ "FROM seller INNER JOIN department "
-			+ "ON seller.DepartmentId = department.Id "
-			+ "ORDER BY Name");
-		
+					"SELECT seller.*, department.Name as DepName " + "FROM seller INNER JOIN department "
+							+ "ON seller.DepartmentId = department.Id " + "ORDER BY Name");
+
 			rs = st.executeQuery();
 			List<Vendedor> listaVendedores = new ArrayList<>();
 			Map<Integer, Departamento> map = new HashMap<>();
-			
+
 			while (rs.next()) {
 				Departamento depart = map.get(rs.getInt("DepartmentID"));
-				if(depart == null) {
+				if (depart == null) {
 					depart = instanciarDepartamento(rs);
 					map.put(rs.getInt("DepartmentID"), depart);
 				}

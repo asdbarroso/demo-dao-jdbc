@@ -1,6 +1,7 @@
 package aplicacao;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import model.dao.DepartamentoDao;
@@ -13,6 +14,7 @@ public class Programa {
 
 	public static void main(String[] args) throws ParseException {
 
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		VendedorDao vendedor = FabricaDao.CreateVendedorDao();
 		DepartamentoDao departamento = FabricaDao.CreateDepartamentoDao();
 
@@ -32,6 +34,19 @@ public class Programa {
 		for (Vendedor vend : vendedorEncontrado2) {
 			System.out.println(vend);
 		}
+		
+		System.out.println("\n === Teste 4 - Inserir Vendedor====");
+		Vendedor vendedorInserir = new Vendedor();
+		Departamento depInserir = new Departamento();
+		depInserir.setId(2);
+		vendedorInserir.setNome("Jorge");
+		vendedorInserir.setEmail("jorge@gmail.com");
+		vendedorInserir.setDataNasc(sdf.parse(("20/07/1965")));
+		vendedorInserir.setSalarioBase(2500.00);
+		vendedorInserir.setDepartamento(depInserir);
+		vendedor.inserir(vendedorInserir);
+		System.out.println("Novo Id inserido : " + vendedorInserir.getId());
+		
 
 		System.out.println("\n===Teste Busca Departamento po Id====");
 		Departamento dep = departamento.buscarPorId(3);
