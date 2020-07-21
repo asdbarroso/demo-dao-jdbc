@@ -10,7 +10,7 @@ import model.dao.VendedorDao;
 import model.entidades.Departamento;
 import model.entidades.Vendedor;
 
-public class Programa {
+public class ProgramaVendedores {
 
 	public static void main(String[] args) throws ParseException {
 
@@ -18,6 +18,9 @@ public class Programa {
 		VendedorDao vendedor = FabricaDao.CreateVendedorDao();
 		DepartamentoDao departamento = FabricaDao.CreateDepartamentoDao();
 
+		System.out.println("===Testes Vendedores===");
+		System.out.println("=======================");
+		
 		System.out.println("===Teste Busca Vendedores por Id===");
 		Vendedor vendedorEncontrado = vendedor.buscarPorId(3);
 		System.out.println(vendedorEncontrado);
@@ -35,7 +38,7 @@ public class Programa {
 			System.out.println(vend);
 		}
 
-		/*
+		
 		System.out.println("\n === Teste 4 - Inserir Vendedor====");
 		Vendedor vendedorInserir = new Vendedor();
 		Departamento depInserir = new Departamento();
@@ -47,7 +50,7 @@ public class Programa {
 		vendedorInserir.setDepartamento(depInserir);
 		vendedor.inserir(vendedorInserir);
 		System.out.println("Novo Id inserido : " + vendedorInserir.getId());
-*/
+
 		System.out.println("\n===Teste 5 - Atualização de Vendedor");
 		Vendedor vendAtu = vendedor.buscarPorId(1);
 		vendAtu.setNome("Bruce Wayne");
@@ -55,6 +58,13 @@ public class Programa {
 		vendedor.atualizar(vendAtu);
 		System.out.println("Update Completo!!");
 		System.out.println("Vendedor atualizado: " + vendedorEncontrado.getId());
+		
+		System.out.println("==============================");
+
+		System.out.println("===Testes Departamento===");
+		System.out.println("Teste 1 - Inserindo Departamento ");
+		
+		System.out.println("Informe o nome do departamento a inserir: ");
 		
 		
 		System.out.println("\n===Teste 6 - Vendedor Deletado===");
